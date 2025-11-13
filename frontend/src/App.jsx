@@ -4,11 +4,13 @@ import Header from "./components/Layout/Header";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Settings from "./components/Pages/Settings";
 import AllTasks from "./components/Users/AllTasks";
+import AddNewTask from "./components/Components/AddNewTask";
 
 const App = () => {
   const [sidebarCollapsed, setSideBarCollapsed] = useState(false);
   const [currentPage, setCurrentPage] = useState("dashboard");
   const [toggleMobile, setToggleMobile] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-500">
       <div className="overflow-hidden h-screen flex relative">
@@ -26,6 +28,11 @@ const App = () => {
             onToggleSidebar={() => setSideBarCollapsed(!sidebarCollapsed)}
             onMobileToggler={() => setToggleMobile(!toggleMobile)}
             mobileToggled={toggleMobile}
+            onChangeAddNewTaskModel={() => {
+              setShowModal(!showModal);
+            }}
+            isModelShow={showModal}
+            onPageChange={setCurrentPage}
           />
           <main className="flex-1 overflow-y-auto bg-transparent">
             <div className="p-6 space-y-6">
@@ -36,6 +43,14 @@ const App = () => {
           </main>
         </div>
       </div>
+      {showModal && (
+        <AddNewTask
+          onChangeAddNewTaskModel={() => {
+            setShowModal(!showModal);
+          }}
+          isModelShow={showModal}
+        />
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import {
   Bell,
   ChevronDown,
   Filter,
+  LogOut,
   Menu,
   MenuIcon,
   MenuSquare,
@@ -11,17 +12,19 @@ import {
   Settings,
   Sun,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import logo from "../../assets/image/avatar.gif";
 const Header = ({
-  sidebarCollapsed,
   onToggleSidebar,
-  mobileToggled,
   onMobileToggler,
+  onChangeAddNewTaskModel,
+  onPageChange,
 }) => {
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef();
 
   useEffect(() => {
     if (darkMode) {
@@ -32,15 +35,24 @@ const Header = ({
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
-    <div className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 px-6 py-4">
+    <div className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 px-6 py-4 z-20">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           {/* Desktop Collapsive */}
           <button
             className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800
         transition-colors cursor-pointer hidden md:block"
-            onClick={() => onToggleSidebar(!sidebarCollapsed)}
+            onClick={onToggleSidebar}
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -48,7 +60,7 @@ const Header = ({
           <button
             className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800
         transition-colors cursor-pointer block md:hidden"
-            onClick={() => onMobileToggler(!mobileToggled)}
+            onClick={onMobileToggler}
           >
             <MenuIcon className="h-5 w-5" />
           </button>
@@ -75,7 +87,10 @@ const Header = ({
           </div>
         </div> */}
         <div className="flex items-center space-x-3">
-          <button className="hidden lg:flex items-center space-x-2 py-2 px-4 bg-linear-to-r from-[#BF092F] to-[#8C00FF] text-white rounded-xl hover:shadow-lg translate-all cursor-pointer">
+          <button
+            className="hidden lg:flex items-center space-x-2 py-2 px-4 bg-linear-to-r from-[#BF092F] to-[#8C00FF] text-white rounded-xl hover:shadow-lg translate-all cursor-pointer"
+            onClick={onChangeAddNewTaskModel}
+          >
             <Plus className="h-4 w-4" />
             <p className="text-sm font-medium">Add New Task</p>
           </button>
@@ -98,25 +113,59 @@ const Header = ({
             </span>
           </button>
           {/* Setting */}
-          <button className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+          <button
+            className="hidden md:block p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            onClick={() => {
+              onPageChange("settings");
+            }}
+          >
             <Settings className="w-6 h-6" />
           </button>
           {/* User Profile */}
-          <div className="flex items-center space-x-3 pl-3 border-l border-slate-200 dark:border-slate-700">
-            <img
-              src={logo}
-              alt="User Profile"
-              className="w-8 h-8 rounded-full ring-2 ring-[#BF092F]/20 p-1"
-            />
-            <div className="hidden md:block">
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                Endou Mamoru
-              </p>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Administrator
-              </p>
+          <div className="relative" ref={menuRef}>
+            {/* Profile Section */}
+            <div
+              onClick={() => setOpen(!open)}
+              className="flex items-center space-x-3 pl-3 border-l border-slate-200 dark:border-slate-700 cursor-pointer select-none"
+            >
+              <img
+                src={logo}
+                alt="User Profile"
+                className="w-8 h-8 rounded-full ring-2 ring-[#BF092F]/20 p-1"
+              />
+              <div className="hidden md:block">
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                  Endou Mamoru
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Administrator
+                </p>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                  open ? "rotate-180" : "rotate-0"
+                }`}
+              />
             </div>
-            <ChevronDown className="w-4 h-4 text-slate-400" />
+
+            {/* Dropdown Menu */}
+            {open && (
+              <div className="absolute right-0 mt-3 w-44 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden z-5000 animate-fadeIn">
+                <button
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  onClick={() => {
+                    onPageChange("settings");
+                  }}
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
+                </button>
+                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-slate-700 transition-colors">
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
