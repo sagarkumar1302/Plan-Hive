@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "./components/Layout/Sidebar";
 import Header from "./components/Layout/Header";
-import Dashboard from "./components/Dashboard/dashboard";
+import Dashboard from "./components/Dashboard/Dashboard";
 import Settings from "./components/Pages/Settings";
 import AllTasks from "./components/Users/AllTasks";
 
