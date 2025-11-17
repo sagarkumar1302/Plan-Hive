@@ -88,11 +88,11 @@ const Header = ({
         </div> */}
         <div className="flex items-center space-x-3">
           <button
-            className="hidden lg:flex items-center space-x-2 py-2 px-4 bg-linear-to-r from-[#BF092F] to-[#8C00FF] text-white rounded-xl hover:shadow-lg translate-all cursor-pointer"
+            className="flex items-center justify-center md:space-x-2 py-2 px-4 bg-linear-to-r from-[#BF092F] to-[#8C00FF] text-white rounded-xl hover:shadow-lg translate-all cursor-pointer"
             onClick={onChangeAddNewTaskModel}
           >
             <Plus className="h-4 w-4" />
-            <p className="text-sm font-medium">Add New Task</p>
+            <p className="hidden lg:block text-sm font-medium">Add New Task</p>
           </button>
           {/* Toggle Theme */}
           <button

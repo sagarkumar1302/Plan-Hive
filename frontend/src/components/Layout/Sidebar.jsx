@@ -19,12 +19,12 @@ const menu = [
     // active: "dashboard",
   },
   {
-    id: "users",
+    id: "tasks",
     icon: Users,
-    label: "Users",
+    label: "Tasks",
     count: "2.4k",
     submenu: [
-      { id: "all-users", label: "All Users" },
+      { id: "all-users", label: "All Tasks" },
       { id: "roles", label: "Roles & Permissions" },
       { id: "activity", label: "User Activity" },
     ],

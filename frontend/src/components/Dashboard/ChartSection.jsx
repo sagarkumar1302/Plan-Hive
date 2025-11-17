@@ -5,10 +5,10 @@ import TaskPieChart from "./TaskPieChart";
 const ChartSection = () => {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-      <div className="xl:col-span-2">
+      <div className="xl:col-span-2 min-w-0">
         <TaskChart />
       </div>
-      <div className="space-y-6">
+      <div className="space-y-6 min-w-0">
         <TaskPieChart />
       </div>
     </div>

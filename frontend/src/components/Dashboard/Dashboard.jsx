@@ -8,12 +8,14 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       <StatusGrid />
-      <ChartSection />
+      <div className="min-w-0">
+        <ChartSection />
+      </div>
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2">
           <TableSection />
         </div>
-        <div>
+        <div className="min-w-0">
           <Activity />
         </div>
       </div>
