@@ -23,21 +23,9 @@ const menu = [
     icon: Users,
     label: "Tasks",
     count: "2.4k",
-    submenu: [
-      { id: "all-users", label: "All Tasks" },
-      { id: "roles", label: "Roles & Permissions" },
-      { id: "activity", label: "User Activity" },
-    ],
+    submenu: [{ id: "all-users", label: "All Tasks" }],
   },
-  {
-    id: "ecommerce",
-    icon: ShoppingBag,
-    label: "E-commerce",
-    submenu: [
-      { id: "products", label: "Products" },
-      { id: "orders", label: "Orders" },
-    ],
-  },
+
   {
     id: "settings",
     icon: Settings,
@@ -141,13 +129,18 @@ const Sidebar = ({
                 </>
               </div>
               {!collapsed && item.submenu && (
-                <ChevronDown className="w-4 h-4" />
+                // <ChevronDown className="w-4 h-4" />
+                <ChevronDown
+                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                    expendedItems.has(item.id) ? "rotate-180" : "rotate-0"
+                  }`}
+                />
               )}
             </button>
             {/* Sub Menu */}
             {/* Sub Menu */}
             {!collapsed && item.submenu && expendedItems.has(item.id) && (
-              <div className="ml-8 mt-2 space-y-1">
+              <div className="ml-8 my-4  space-y-1">
                 {item.submenu?.map((menu) => (
                   <button
                     key={menu.id}
