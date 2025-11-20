@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bell, Moon, Globe, User, Lock, LogOut } from "lucide-react";
 
 const Settings = () => {
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
+  );
   const [profile, setProfile] = useState({
     name: "Sagar Kumar",
     username: "sagar123",
@@ -25,7 +28,15 @@ const Settings = () => {
     setTempData(profile);
     setIsEditing(false);
   };
-
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
   return (
     <div className="flex justify-center p-4">
       <div className="w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-6 space-y-8">
@@ -150,13 +161,13 @@ const Settings = () => {
               <p className="text-slate-700 dark:text-slate-300 font-medium">
                 Dark Mode
               </p>
-              <ToggleItem />
+              <ToggleItem darkMode={darkMode} setDarkMode={setDarkMode} />
             </div>
           </div>
         </div>
 
         {/* Language */}
-        <div className="space-y-3">
+        {/* <div className="space-y-3">
           <h2 className="text-xl font-semibold text-slate-800 dark:text-white flex items-center gap-2">
             <Globe size={20} /> Language
           </h2>
@@ -166,7 +177,7 @@ const Settings = () => {
             <option>Hindi</option>
             <option>Spanish</option>
           </select>
-        </div>
+        </div> */}
 
         {/* Security */}
         <div className="space-y-3">
@@ -178,9 +189,9 @@ const Settings = () => {
             <button className="w-full text-left p-3 bg-white dark:bg-slate-900 rounded-lg shadow text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
               Change Password
             </button>
-            <button className="w-full text-left p-3 bg-white dark:bg-slate-900 rounded-lg shadow text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
+            {/* <button className="w-full text-left p-3 bg-white dark:bg-slate-900 rounded-lg shadow text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
               Two-Factor Authentication
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -195,14 +206,20 @@ const Settings = () => {
   );
 };
 
-const ToggleItem = () => {
+const ToggleItem = ({ darkMode, setDarkMode }) => {
   return (
     <label className="relative inline-block w-11 h-6">
-      <input type="checkbox" className="peer opacity-0 w-0 h-0" />
+      <input
+        type="checkbox"
+        checked={darkMode}
+        onChange={() => setDarkMode(!darkMode)}
+        className="peer opacity-0 w-0 h-0"
+      />
       <span className="absolute cursor-pointer inset-0 bg-slate-300 peer-checked:bg-slate-900 rounded-full transition"></span>
       <span className="absolute left-1 top-1 peer-checked:translate-x-5 bg-white dark:bg-slate-300 w-4 h-4 rounded-full transition"></span>
     </label>
   );
 };
+
 
 export default Settings;

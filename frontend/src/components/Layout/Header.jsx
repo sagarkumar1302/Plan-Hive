@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import logo from "../../assets/image/avatar.gif";
+import { useAuthStore } from "../../store/authStore";
 const Header = ({
   onToggleSidebar,
   onMobileToggler,
@@ -25,7 +26,15 @@ const Header = ({
   );
   const [open, setOpen] = useState(false);
   const menuRef = useRef();
-
+  const logout = useAuthStore((e)=>e.logout)
+  const user = useAuthStore((e)=>e.user)
+  const logoutHanlder = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.log(error.response.data.message);
+    }
+  };
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -160,7 +169,10 @@ const Header = ({
                   <Settings className="w-4 h-4" />
                   Settings
                 </button>
-                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-slate-700 transition-colors">
+                <button
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-slate-700 transition-colors"
+                  onClick={logoutHanlder}
+                >
                   <LogOut className="w-4 h-4" />
                   Logout
                 </button>
