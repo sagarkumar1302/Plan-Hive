@@ -223,7 +223,7 @@ const AllTasks = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 relative">
+    <div className="md:p-6 space-y-6 relative">
       {/* ===============================
           FULL-SCREEN PARTY POPPER BURST
          =============================== */}

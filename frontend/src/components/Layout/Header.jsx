@@ -146,7 +146,7 @@ const Header = ({
               </span>
             )}
             {showNotifications && (
-              <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-50 p-4">
+              <div className="absolute right-0 mt-3 w-60 md:w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-50 p-4">
                 <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Notifications
                 </h3>

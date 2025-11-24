@@ -46,10 +46,13 @@ const StatusGrid = ({ tasks }) => {
     {
       title: "Productivity Rate",
       value:
-        (
+        !isNaN((
           (tasks?.filter((task) => task.isCompleted)?.length / tasks?.length) *
           100
-        ).toFixed(2) + "%" || 0,
+        ).toFixed(2))? (
+          (tasks?.filter((task) => task.isCompleted)?.length / tasks?.length) *
+          100
+        ).toFixed(2) + "%" : 0,
       change: "+3.4%",
       trend: "up",
       icon: TrendingUp,

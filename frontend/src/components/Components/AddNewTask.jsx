@@ -58,7 +58,7 @@ const AddNewTask = ({ onChangeAddNewTaskModel, editTask, onSave }) => {
       ></div>
 
       {/* Modal Box */}
-      <div className="relative z-10 bg-white dark:bg-slate-800 shadow-2xl p-6 w-[450px] rounded-2xl">
+      <div className="relative z-10 bg-white dark:bg-slate-800 shadow-2xl p-6 w-full md:w-[450px] mx-5 md:mx-0 rounded-2xl">
         <h3 className="text-xl font-bold text-slate-800 dark:text-white text-center">
           Add New Task
         </h3>

@@ -122,7 +122,7 @@ const Settings = () => {
     }
   }, [darkMode]);
   return (
-    <div className="flex justify-center p-4">
+    <div className="flex justify-center md:p-4">
       <div className="w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-6 space-y-8">
         {/* Header */}
         <div className="border-b border-slate-200/50 dark:border-slate-700/50 pb-4">
