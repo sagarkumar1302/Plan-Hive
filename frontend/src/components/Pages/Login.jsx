@@ -34,6 +34,7 @@ const Login = () => {
       {/* Card */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         {/* Logo + Brand */}
+        
         <div className="text-center mb-8 flex justify-center items-center gap-4">
           <div
             className={`w-10 h-10 bg-linear-to-r from-[#BF092F] to-[#8C00FF] rounded-xl flex items-center justify-center transition-all 
@@ -110,6 +111,10 @@ const Login = () => {
               Sign Up
             </Link>
           </p>
+          <p className="text-xs text-center pt-3">
+          Kindly wait for a short while. The backend service is currently
+          starting up and will be ready in approximately 1–2 minutes.
+        </p>
         </div>
       </div>
     </div>

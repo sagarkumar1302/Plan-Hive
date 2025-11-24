@@ -89,6 +89,7 @@ const Register = () => {
       {/* Card */}
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg p-8">
         {/* Logo */}
+        
         <div className="text-center mb-8 flex justify-center items-center gap-4">
           <div className="w-10 h-10 bg-linear-to-r from-[#BF092F] to-[#8C00FF] rounded-xl flex items-center justify-center">
             <MonitorCog className="h-6 w-6 text-white" />
