@@ -1,14 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import api from "../../api/axios";
 
-const AddNewTask = ({ onChangeAddNewTaskModel }) => {
+const AddNewTask = ({ onChangeAddNewTaskModel, editTask, onSave }) => {
   const [taskData, setTaskData] = useState({
     title: "",
     description: "",
     deadline: "",
     priority: "Medium",
-    completed: false,
+    isCompleted: false,
   });
-
+  useEffect(() => {
+    if (editTask) {
+      setTaskData({
+        title: editTask.title,
+        description: editTask.description,
+        deadline: editTask.deadline?.split("T")[0],
+        priority: editTask.priority,
+        isCompleted: editTask.isCompleted,
+      });
+    }
+  }, [editTask]);
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setTaskData({
@@ -17,29 +28,29 @@ const AddNewTask = ({ onChangeAddNewTaskModel }) => {
     });
   };
 
-  const handleAddTask = () => {
+  const handleSubmit = async () => {
     if (!taskData.title.trim()) {
-      alert("Task title is required!");
+      alert("Title is required!");
       return;
     }
 
-    console.log("New Task:", taskData);
+    // If edit mode → call parent update function
+    if (editTask) {
+      onSave(editTask._id, taskData);
+      return;
+    }
 
-    // Reset after add
-    setTaskData({
-      title: "",
-      description: "",
-      deadline: "",
-      priority: "Medium",
-      completed: false,
-    });
-
-    onChangeAddNewTaskModel(); 
+    // Otherwise ADD Task
+    try {
+      await api.post("/todo/add", taskData);
+      onChangeAddNewTaskModel();
+    } catch (err) {
+      console.log(err.response?.data?.message);
+    }
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center h-screen z-999">
-      
       {/* Background Overlay */}
       <div
         onClick={onChangeAddNewTaskModel}
@@ -49,8 +60,8 @@ const AddNewTask = ({ onChangeAddNewTaskModel }) => {
       {/* Modal Box */}
       <div className="relative z-10 bg-white dark:bg-slate-800 shadow-2xl p-6 w-[450px] rounded-2xl">
         <h3 className="text-xl font-bold text-slate-800 dark:text-white text-center">
-            Add New Task
-          </h3>
+          Add New Task
+        </h3>
 
         {/* Title */}
         <div className="mb-4">
@@ -117,8 +128,8 @@ const AddNewTask = ({ onChangeAddNewTaskModel }) => {
         <div className="flex items-center mb-6">
           <input
             type="checkbox"
-            name="completed"
-            checked={taskData.completed}
+            name="isCompleted"
+            checked={taskData.isCompleted}
             onChange={handleChange}
             className="w-4 h-4 accent-blue-600"
           />
@@ -137,10 +148,10 @@ const AddNewTask = ({ onChangeAddNewTaskModel }) => {
           </button>
 
           <button
-            onClick={handleAddTask}
+            onClick={handleSubmit}
             className="px-4 py-2 rounded-lg bg-linear-to-r from-[#BF092F] to-[#8C00FF] text-white  transition-all"
           >
-            Add Task
+            {editTask ? "Update Task" : "Add Task"}
           </button>
         </div>
       </div>

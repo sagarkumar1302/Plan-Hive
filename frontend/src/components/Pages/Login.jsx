@@ -34,16 +34,20 @@ const Login = () => {
       {/* Card */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         {/* Logo + Brand */}
-        {error && <p className="text-center" style={{ color: "red" }}>{error}</p>}
         <div className="text-center mb-8 flex justify-center items-center gap-4">
           <div
             className={`w-10 h-10 bg-linear-to-r from-[#BF092F] to-[#8C00FF] rounded-xl flex items-center justify-center transition-all 
-             `}
+              `}
           >
             <MonitorCog className="h-6 w-6 text-white" />
           </div>
           <h1 className="text-3xl font-extrabold text-black">PlanHive</h1>
         </div>
+        {error && (
+          <p className="text-center pb-3" style={{ color: "red" }}>
+            {error}
+          </p>
+        )}
 
         {/* Login Form */}
         <form className="space-y-5" onSubmit={loginHanlder}>

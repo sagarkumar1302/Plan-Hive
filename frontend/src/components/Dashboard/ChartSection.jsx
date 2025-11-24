@@ -2,14 +2,14 @@ import React from "react";
 import TaskChart from "./TaskChart";
 import TaskPieChart from "./TaskPieChart";
 
-const ChartSection = () => {
+const ChartSection = ({tasks}) => {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
       <div className="xl:col-span-2 min-w-0">
-        <TaskChart />
+        <TaskChart tasks={tasks} />
       </div>
       <div className="space-y-6 min-w-0">
-        <TaskPieChart />
+        <TaskPieChart tasks={tasks} />
       </div>
     </div>
   );

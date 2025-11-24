@@ -9,23 +9,49 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { format } from "date-fns";
 
-const data = [
-  { month: "Jan", completed: 120, pending: 45 },
-  { month: "Feb", completed: 98, pending: 52 },
-  { month: "Mar", completed: 135, pending: 40 },
-  { month: "Apr", completed: 150, pending: 35 },
-  { month: "May", completed: 165, pending: 30 },
-  { month: "Jun", completed: 175, pending: 25 },
-  { month: "Jul", completed: 190, pending: 20 },
-  { month: "Aug", completed: 200, pending: 18 },
-  { month: "Sep", completed: 180, pending: 22 },
-  { month: "Oct", completed: 170, pending: 28 },
-  { month: "Nov", completed: 160, pending: 32 },
-  { month: "Dec", completed: 210, pending: 15 },
-];
+// Convert tasks → monthly chart data
+const getMonth = (dateString) => {
+  const date = new Date(dateString);
 
-const TaskChart = () => {
+  if (isNaN(date)) return null; // invalid date → skip
+
+  return format(date, "MMM");
+};
+
+const getMonthlyTaskData = (tasks) => {
+  const months = {};
+
+  tasks?.forEach((task) => {
+    const month = getMonth(task.createdAt); // Jan, Feb, Mar...
+    if (!month) return;
+    if (!months[month]) {
+      months[month] = { month, completed: 0, pending: 0 };
+    }
+
+    if (task.isCompleted) {
+      months[month].completed += 1;
+    } else {
+      months[month].pending += 1;
+    }
+  });
+
+  // Ensure months remain in order Jan → Dec
+  const orderedMonths = [
+    "Jan","Feb","Mar","Apr","May","Jun",
+    "Jul","Aug","Sep","Oct","Nov","Dec"
+  ];
+
+  return orderedMonths
+    .filter((m) => months[m])
+    .map((m) => months[m]);
+};
+
+
+
+const TaskChart = ({tasks}) => {
+  const data = getMonthlyTaskData(tasks);
   return (
     <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-bl-2xl border border-slate-200/50 dark:border-slate-700/50 p-6">
       <div className="flex items-center justify-between mb-6">

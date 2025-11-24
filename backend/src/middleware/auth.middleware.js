@@ -19,10 +19,8 @@ const verifyJwt = asyncHandler(async (req, res, next) => {
         next();
     } catch (error) {
         // throw new ApiError(406, error?.message || "Invalid Access Token")
-        return res.status(406).json({
-            success: false,
-            message: "Token expired",
-        });
+        req.user = null;
+        next();
     }
 })
 export default verifyJwt;

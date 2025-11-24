@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./components/Layout/Sidebar";
 import Header from "./components/Layout/Header";
 import Dashboard from "./components/Dashboard/Dashboard";
@@ -9,11 +9,29 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./components/Pages/Login";
 import Register from "./components/Pages/Register";
 import ProtectedRoute from "./components/Components/ProtectedRoute";
+import { isTokenExpired } from "./utils/checkTokenExpiry";
+import { useAuthStore } from "./store/authStore";
 const App = () => {
   const [sidebarCollapsed, setSideBarCollapsed] = useState(false);
   const [currentPage, setCurrentPage] = useState("dashboard");
   const [toggleMobile, setToggleMobile] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const { logout, accessToken } = useAuthStore();
+  const [allTasks, setAllTasks] = useState([]);
+  const handleTasksFromDashboard = (tasks) => {
+    setAllTasks(tasks); // now App.jsx stores tasks
+    console.log("Tasks received in App.jsx:", tasks);
+  };
+
+  useEffect(() => {
+    const checkToken = async () => {
+      if (isTokenExpired(accessToken)) {
+        await logout();
+      }
+    };
+    checkToken();
+  }, []);
+
   return (
     <div>
       <Routes>
@@ -32,6 +50,7 @@ const App = () => {
                     onPageChange={setCurrentPage}
                     onMobileToggler={() => setToggleMobile(!toggleMobile)}
                     mobileToggler={toggleMobile}
+                    totalTasks={allTasks.length}
                   />
                   <div className="flex-1 flex flex-col overflow-hidden">
                     <Header
@@ -46,10 +65,14 @@ const App = () => {
                       }}
                       isModelShow={showModal}
                       onPageChange={setCurrentPage}
+                      totalTasks={allTasks}
                     />
                     <main className="flex-1 overflow-y-auto bg-transparent">
                       <div className="p-6 space-y-6">
-                        {currentPage === "dashboard" && <Dashboard />}
+                        {currentPage === "dashboard" && (
+                          <Dashboard onPageChange={setCurrentPage}
+                          onSendTasks={handleTasksFromDashboard} />
+                        )}
                         {currentPage === "settings" && <Settings />}
                         {currentPage === "all-users" && <AllTasks />}
                       </div>

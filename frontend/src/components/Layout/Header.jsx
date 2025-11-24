@@ -20,14 +20,29 @@ const Header = ({
   onMobileToggler,
   onChangeAddNewTaskModel,
   onPageChange,
+  totalTasks,
 }) => {
+  const getNearDeadlineTasks = () => {
+    if (!totalTasks) return [];
+
+    return totalTasks.filter((task) => {
+      if (!task.deadline) return false;
+      const deadline = new Date(task.deadline);
+      const now = new Date();
+      const diffHours = (deadline - now) / (1000 * 60 * 60);
+      return diffHours > 0 && diffHours <= 24;
+    });
+  };
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [nearDeadlineTasks, setNearDeadlineTasks] = useState([]);
+
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
   const [open, setOpen] = useState(false);
   const menuRef = useRef();
-  const logout = useAuthStore((e)=>e.logout)
-  const user = useAuthStore((e)=>e.user)
+  const logout = useAuthStore((e) => e.logout);
+  const user = useAuthStore((e) => e.user);
   const logoutHanlder = async () => {
     try {
       await logout();
@@ -53,6 +68,11 @@ const Header = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  useEffect(() => {
+    const alerts = getNearDeadlineTasks();
+    setNearDeadlineTasks(alerts);
+  }, [totalTasks]);
+
   return (
     <div className="bg-white/80 dark:bg-slate-900/50 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 px-6 py-4 z-20">
       <div className="flex items-center justify-between">
@@ -78,7 +98,7 @@ const Header = ({
               Dashboard
             </h1>
             <p className="text-slate-600 dark:text-white">
-              Welcome Back, Endou
+              Welcome Back, {user.firstName}
             </p>
           </div>
         </div>
@@ -115,11 +135,45 @@ const Header = ({
             )}
           </button>
           {/* Notification */}
-          <button className="relative p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+          <button
+            className="relative p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            onClick={() => setShowNotifications(!showNotifications)}
+          >
             <Bell className="h-6 w-6 " />
-            <span className="absolute top-0 right-0 items-center justify-center px-2 py-1 text-xs leading-none text-red-100 bg-red-600 rounded-full">
-              3
-            </span>
+            {nearDeadlineTasks.length > 0 && (
+              <span className="absolute top-0 right-0 items-center justify-center px-2 py-1 text-xs leading-none text-red-100 bg-red-600 rounded-full">
+                {nearDeadlineTasks.length}
+              </span>
+            )}
+            {showNotifications && (
+              <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-50 p-4">
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                  Notifications
+                </h3>
+
+                {nearDeadlineTasks.length === 0 ? (
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    No upcoming deadlines.
+                  </p>
+                ) : (
+                  <ul className="space-y-3">
+                    {nearDeadlineTasks.map((task) => (
+                      <li
+                        key={task._id}
+                        className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg"
+                      >
+                        <p className="font-semibold text-red-700 dark:text-red-300">
+                          {task.title}
+                        </p>
+                        <p className="text-xs text-red-600 dark:text-red-400">
+                          Due: {new Date(task.deadline).toLocaleString()}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </button>
           {/* Setting */}
           <button
@@ -138,13 +192,13 @@ const Header = ({
               className="flex items-center space-x-3 pl-3 border-l border-slate-200 dark:border-slate-700 cursor-pointer select-none"
             >
               <img
-                src={logo}
+                src={user.avatar}
                 alt="User Profile"
-                className="w-8 h-8 rounded-full ring-2 ring-[#BF092F]/20 p-1"
+                className="w-8 h-8 rounded-full ring-2 ring-[#BF092F]/20 "
               />
               <div className="hidden md:block">
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                  Endou Mamoru
+                  {user.firstName + " " + user.lastName}
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   Administrator

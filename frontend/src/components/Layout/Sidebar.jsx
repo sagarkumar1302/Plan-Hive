@@ -10,28 +10,9 @@ import {
   Zap,
 } from "lucide-react";
 import React, { useState } from "react";
+import usernameLogo from "../../assets/image/username.gif";
 import logo from "../../assets/image/avatar.gif";
-const menu = [
-  {
-    id: "dashboard",
-    icon: Home,
-    label: "Dashboard",
-    // active: "dashboard",
-  },
-  {
-    id: "tasks",
-    icon: Users,
-    label: "Tasks",
-    count: "2.4k",
-    submenu: [{ id: "all-users", label: "All Tasks" }],
-  },
-
-  {
-    id: "settings",
-    icon: Settings,
-    label: "Settings",
-  },
-];
+import { useAuthStore } from "../../store/authStore";
 
 const Sidebar = ({
   collapsed,
@@ -40,7 +21,29 @@ const Sidebar = ({
   onPageChange,
   mobileToggler,
   onMobileToggler,
+  totalTasks,
 }) => {
+  const menu = [
+    {
+      id: "dashboard",
+      icon: Home,
+      label: "Dashboard",
+      // active: "dashboard",
+    },
+    {
+      id: "tasks",
+      icon: Users,
+      label: "Tasks",
+      count: totalTasks,
+      submenu: [{ id: "all-users", label: "All Tasks" }],
+    },
+
+    {
+      id: "settings",
+      icon: Settings,
+      label: "Settings",
+    },
+  ];
   const [expendedItems, setExpendedItems] = useState(new Set(["analytics"]));
   const toggleExpended = (itemId) => {
     const newExpanded = new Set(expendedItems);
@@ -51,6 +54,7 @@ const Sidebar = ({
     }
     setExpendedItems(newExpanded);
   };
+  const user = useAuthStore((e) => e.user);
   return (
     <div
       className={`${
@@ -170,17 +174,18 @@ const Sidebar = ({
         <div className="p-4 border-t border-slate-200/50 dark:border-slate-700/50">
           <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
             <img
-              src={logo}
+              src={user.avatar?user.avatar: logo}
               alt="Avatar Logo"
-              className="w-10 h-10 p-1 rounded-full ring-2 ring-[#BF092F]/10"
+              className="w-10 h-10  rounded-full ring-2 ring-[#BF092F]/10"
             />
             <div className="flex-1 min-w-0">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-800 truncate dark:text-white">
-                  Endou Mamoru
+                  {user.firstName + " " + user.lastName}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                  @endou
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate flex gap-2">
+                  <img src={usernameLogo} alt={user.firstName} className="w-4" />
+                  {"@" + user.username}
                 </p>
               </div>
             </div>

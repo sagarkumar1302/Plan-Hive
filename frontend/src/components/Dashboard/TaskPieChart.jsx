@@ -8,13 +8,36 @@ import {
   Legend,
 } from "recharts";
 
-const TaskPieChart = () => {
+const TaskPieChart = ({ tasks }) => {
+  const findPercentage = (value) => {
+    return parseFloat(((value / tasks?.length) * 100).toFixed(2));
+  };
   // Dummy task data
   const data = [
-    { name: "Completed", value: 15 },
-    { name: "In Progress", value: 10 },
-    { name: "Pending", value: 65 },
-    { name: "Overdue", value: 10 },
+    {
+      name: "High",
+      value:
+        findPercentage(
+          tasks?.filter((task) => task.priority.toLowerCase() == "high")?.length
+        ) || 0,
+    },
+    {
+      name: "Medium",
+      value:
+        findPercentage(
+          tasks?.filter((task) => task.priority.toLowerCase() == "medium")
+            ?.length
+        ) || 0,
+    },
+
+    {
+      name: "Low",
+      value:
+        findPercentage(
+          tasks?.filter((task) => task.priority.toLowerCase() == "low")
+            ?.length
+        ) || 0,
+    },
   ];
 
   // Colors for the pie segments
@@ -24,7 +47,7 @@ const TaskPieChart = () => {
     <div className="bg-white dark:bg-slate-800 backdrop-blur-xl rounded-b-2xl p-6 border border-slate-200/50 dark:border-slate-700/50">
       <div className="mb-6">
         <h3 className="text-xl font-bold text-slate-800 dark:text-white">
-          Tasks by Category
+          Tasks by Priority
         </h3>
         <p className="text-sm text-slate-500 dark:text-slate-400">
           Overview of task distribution
@@ -45,7 +68,7 @@ const TaskPieChart = () => {
               label={({ name, percent }) =>
                 `${name}: ${(percent * 100).toFixed(0)}%`
               }
-              style={{fontSize: "14px"}}
+              style={{ fontSize: "14px" }}
             >
               {data.map((entry, index) => (
                 <Cell

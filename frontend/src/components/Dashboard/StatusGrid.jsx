@@ -7,50 +7,57 @@ import {
   ListChecks,
 } from "lucide-react";
 import React from "react";
+import { useState } from "react";
+import { useEffect } from "react";
+import api from "../../api/axios";
 
-const stats = [
-  {
-    title: "Total Tasks",
-    value: "1,248",
-    change: "+8.2%",
-    trend: "up",
-    icon: ListChecks,
-    color: "from-blue-400 to-blue-600",
-    bgColor: "bg-blue-50 dark:bg-blue-900/20",
-    textColor: "text-blue-600 dark:text-blue-400",
-  },
-  {
-    title: "Completed Tasks",
-    value: "932",
-    change: "+5.6%",
-    trend: "up",
-    icon: CheckSquare,
-    color: "from-emerald-400 to-emerald-600",
-    bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
-    textColor: "text-emerald-600 dark:text-emerald-400",
-  },
-  {
-    title: "Pending Tasks",
-    value: "276",
-    change: "-2.1%",
-    trend: "down",
-    icon: Clock,
-    color: "from-amber-400 to-amber-600",
-    bgColor: "bg-amber-50 dark:bg-amber-900/20",
-    textColor: "text-amber-600 dark:text-amber-400",
-  },
-  {
-    title: "Productivity Rate",
-    value: "84.3%",
-    change: "+3.4%",
-    trend: "up",
-    icon: TrendingUp,
-    color: "from-purple-400 to-purple-600",
-    bgColor: "bg-purple-50 dark:bg-purple-900/20",
-    textColor: "text-purple-600 dark:text-purple-400",
-  },
-];
-const StatusGrid = () => {
+const StatusGrid = ({ tasks }) => {
+  const stats = [
+    {
+      title: "Total Tasks",
+      value: tasks?.length || 0,
+      change: "+8.2%",
+      trend: "up",
+      icon: ListChecks,
+      color: "from-blue-400 to-blue-600",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+      textColor: "text-blue-600 dark:text-blue-400",
+    },
+    {
+      title: "Completed Tasks",
+      value: tasks?.filter((task) => task.isCompleted)?.length || 0,
+      change: "+5.6%",
+      trend: "up",
+      icon: CheckSquare,
+      color: "from-emerald-400 to-emerald-600",
+      bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
+      textColor: "text-emerald-600 dark:text-emerald-400",
+    },
+    {
+      title: "Pending Tasks",
+      value: tasks?.filter((task) => !task.isCompleted)?.length || 0,
+      change: "-2.1%",
+      trend: "down",
+      icon: Clock,
+      color: "from-amber-400 to-amber-600",
+      bgColor: "bg-amber-50 dark:bg-amber-900/20",
+      textColor: "text-amber-600 dark:text-amber-400",
+    },
+    {
+      title: "Productivity Rate",
+      value:
+        (
+          (tasks?.filter((task) => task.isCompleted)?.length / tasks?.length) *
+          100
+        ).toFixed(2) + "%" || 0,
+      change: "+3.4%",
+      trend: "up",
+      icon: TrendingUp,
+      color: "from-purple-400 to-purple-600",
+      bgColor: "bg-purple-50 dark:bg-purple-900/20",
+      textColor: "text-purple-600 dark:text-purple-400",
+    },
+  ];
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       {stats.map((stats, index) => (

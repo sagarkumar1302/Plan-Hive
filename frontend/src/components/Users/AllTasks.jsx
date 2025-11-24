@@ -1,36 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Filter, Search, Edit, Trash2, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import api from "../../api/axios";
+import { useAuthStore } from "../../store/authStore";
+import AddNewTask from "../Components/AddNewTask";
 /* -------------------------
   Dummy tasks (same as before)
 ------------------------- */
-const dummyTasks = [
-  {
-    _id: 1,
-    title: "Design Dashboard UI",
-    description: "Create the layout and theme for dashboard analytics page.",
-    isCompleted: false,
-    priority: "High",
-    deadline: "2025-11-20",
-  },
-  {
-    _id: 2,
-    title: "Fix Login Bug",
-    description: "Resolve the token refresh issue in user authentication.",
-    isCompleted: true,
-    priority: "Medium",
-    deadline: "2025-11-16",
-  },
-  {
-    _id: 3,
-    title: "Write Unit Tests",
-    description: "Add tests for user and task APIs.",
-    isCompleted: false,
-    priority: "Low",
-    deadline: "2025-11-25",
-  },
-];
 
 /* -------------------------
   Helper: generate particles
@@ -128,14 +104,17 @@ function playPopSound() {
   AllTasks component
 ------------------------- */
 const AllTasks = () => {
-  const [tasks, setTasks] = useState(dummyTasks);
+  const user = useAuthStore((e) => e.user);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState(null);
 
   // celebration state
   const [showBurst, setShowBurst] = useState(false);
   const [particles, setParticles] = useState([]);
   const [ribbons, setRibbons] = useState([]);
   const burstRef = useRef(null);
+  const [tasks, setTasks] = useState();
 
   useEffect(() => {
     if (showBurst) {
@@ -152,31 +131,81 @@ const AllTasks = () => {
       return () => clearTimeout(t);
     }
   }, [showBurst]);
+  useEffect(() => {
+    const getAllTasks = async () => {
+      try {
+        const response = await api.get("/todo/get-todo");
+        console.log(response.data.data);
+        setTasks(response.data.data);
+      } catch (error) {
+        console.log(error.response.data.message);
+      }
+    };
+    getAllTasks();
+  }, [user]);
+  const handleToggleComplete = async (id) => {
+    try {
+      const task = tasks.find((t) => t._id === id);
 
-  const handleToggleComplete = (id) => {
-    const task = tasks.find((t) => t._id === id);
+      // Send updated isCompleted to backend
+      const response = await api.patch(`/todo/update-todo/${id}`, {
+        isCompleted: !task.isCompleted,
+      });
 
-    setTasks((prev) =>
-      prev.map((t) => (t._id === id ? { ...t, isCompleted: !t.isCompleted } : t))
-    );
+      // Update UI instantly
+      setTasks((prev) =>
+        prev.map((t) =>
+          t._id === id
+            ? {
+                ...t,
+                isCompleted: !t.isCompleted,
+              }
+            : t
+        )
+      );
 
-    if (!task.isCompleted) {
-      // trigger realistic party popper burst
-      setShowBurst(true);
-      // hide after animation completes
-      setTimeout(() => setShowBurst(false), 1200);
+      // Celebration animation (only when marking completed)
+      if (!task.isCompleted) {
+        setShowBurst(true);
+        setTimeout(() => setShowBurst(false), 1200);
+      }
+    } catch (error) {
+      console.log(error.response?.data?.message || error.message);
     }
   };
 
-  const handleDelete = (id) => {
-    setTasks((prev) => prev.filter((t) => t._id !== id));
+  const handleDelete = async (id) => {
+    try {
+      const response = await api.delete(`/todo/delete-todo/${id}`);
+      setTasks((prev) => prev.filter((t) => t._id !== id));
+    } catch (error) {
+      console.log(error.response.data.message);
+    }
+  };
+  const handleSaveEditedTask = async (id, updatedData) => {
+    try {
+      await api.patch(`/todo/update-todo/${id}`, updatedData);
+
+      // Update UI
+      setTasks((prev) =>
+        prev.map((t) => (t._id === id ? { ...t, ...updatedData } : t))
+      );
+
+      // Close modal
+      setShowModal(false);
+      setTaskToEdit(null);
+    } catch (err) {
+      console.log(err.response?.data?.message);
+    }
   };
 
   const handleEdit = (id) => {
-    alert("Edit feature coming soon! Task ID: " + id);
+    const selectedTask = tasks.find((t) => t._id === id);
+    setTaskToEdit(selectedTask);
+    setShowModal(true);
   };
 
-  const filteredTasks = tasks.filter(
+  const filteredTasks = tasks?.filter(
     (t) =>
       t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -247,7 +276,7 @@ const AllTasks = () => {
             </motion.div>
 
             {/* confetti particles */}
-            {particles.map((p) => (
+            {particles?.map((p) => (
               <motion.span
                 key={`p-${p.id}-${p.x.toFixed(0)}`}
                 initial={{ x: 0, y: 0, scale: 1, rotate: 0, opacity: 1 }}
@@ -280,7 +309,13 @@ const AllTasks = () => {
             {ribbons.map((r) => (
               <motion.div
                 key={`r-${r.id}-${r.x.toFixed(0)}`}
-                initial={{ x: 0, y: 0, rotate: r.rotate - 30, scale: 1, opacity: 1 }}
+                initial={{
+                  x: 0,
+                  y: 0,
+                  rotate: r.rotate - 30,
+                  scale: 1,
+                  opacity: 1,
+                }}
                 animate={{
                   x: r.x,
                   y: r.y,
@@ -329,7 +364,7 @@ const AllTasks = () => {
       {/* Task List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         <AnimatePresence>
-          {filteredTasks.map((task) => (
+          {filteredTasks?.map((task) => (
             <motion.div
               key={task._id}
               layout
@@ -389,7 +424,7 @@ const AllTasks = () => {
                 <motion.button
                   whileTap={{ scale: 0.94 }}
                   onClick={() => handleToggleComplete(task._id)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-1 transition-all duration-200 ${
+                  className={`cursor-pointer px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-1 transition-all duration-200 ${
                     task.isCompleted
                       ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
                       : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-600"
@@ -402,7 +437,7 @@ const AllTasks = () => {
                 <motion.button
                   whileTap={{ scale: 0.94 }}
                   onClick={() => handleEdit(task._id)}
-                  className="px-3 py-2 rounded-lg text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-all flex items-center gap-1"
+                  className="cursor-pointer px-3 py-2 rounded-lg text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-all flex items-center gap-1"
                 >
                   <Edit className="w-4 h-4" />
                   Edit
@@ -411,7 +446,7 @@ const AllTasks = () => {
                 <motion.button
                   whileTap={{ scale: 0.94 }}
                   onClick={() => handleDelete(task._id)}
-                  className="px-3 py-2 rounded-lg text-sm font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-all flex items-center gap-1"
+                  className="cursor-pointer px-3 py-2 rounded-lg text-sm font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-all flex items-center gap-1"
                 >
                   <Trash2 className="w-4 h-4" />
                   Delete
@@ -422,10 +457,20 @@ const AllTasks = () => {
         </AnimatePresence>
       </div>
 
-      {filteredTasks.length === 0 && (
+      {filteredTasks?.length === 0 && (
         <p className="text-center text-slate-500 dark:text-slate-400 mt-10">
           No tasks found.
         </p>
+      )}
+      {showModal && (
+        <AddNewTask
+          onChangeAddNewTaskModel={() => {
+            setShowModal(false);
+            setTaskToEdit(null);
+          }}
+          editTask={taskToEdit}
+          onSave={handleSaveEditedTask}
+        />
       )}
     </div>
   );

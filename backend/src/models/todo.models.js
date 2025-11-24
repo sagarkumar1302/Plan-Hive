@@ -16,17 +16,20 @@ const todoSchema = new mongoose.Schema({
     },
     priority: {
         type: String,
-        enum: ["Low", "Medium", "High"], 
-        default: "Low", 
+        enum: ["Low", "Medium", "High"],
+        default: "Low",
         required: true
     },
-    deadline : {
+    deadline: {
         type: Date,
-        required : true
+        required: true
     },
-    owner : {
+    owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     }
-})
+},
+    {
+        timestamps: true,
+    })
 export const Todo = mongoose.model("Todo", todoSchema);
