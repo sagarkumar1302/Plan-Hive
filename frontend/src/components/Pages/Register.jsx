@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, UserPlus, MonitorCog } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
- // <-- your axios instance
+// <-- your axios instance
 import api from "../../api/axios";
 
 const Register = () => {
@@ -105,7 +105,9 @@ const Register = () => {
         <form className="space-y-5" onSubmit={handleRegister}>
           {/* First Name */}
           <div>
-            <label className="text-sm font-medium text-gray-700">First Name</label>
+            <label className="text-sm font-medium text-gray-700">
+              First Name
+            </label>
             <input
               type="text"
               name="firstName"
@@ -117,7 +119,9 @@ const Register = () => {
           </div>
           {/* Last Name */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Last Name</label>
+            <label className="text-sm font-medium text-gray-700">
+              Last Name
+            </label>
             <input
               type="text"
               name="lastName"
@@ -130,7 +134,9 @@ const Register = () => {
 
           {/* Username */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Username</label>
+            <label className="text-sm font-medium text-gray-700">
+              Username
+            </label>
             <input
               type="text"
               name="username"
@@ -156,7 +162,9 @@ const Register = () => {
 
           {/* Password */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Password</label>
+            <label className="text-sm font-medium text-gray-700">
+              Password
+            </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -178,7 +186,9 @@ const Register = () => {
 
           {/* Confirm Password */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+            <label className="text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
@@ -199,19 +209,36 @@ const Register = () => {
           </div>
 
           {/* Avatar Upload */}
+          {/* Avatar Upload */}
           <div>
-            <label className="text-sm font-medium text-gray-700">Avatar (optional)</label>
+            <label className="text-sm font-medium text-gray-700">
+              Avatar (optional)
+            </label>
+
             <input
               type="file"
+              name="avatar"
               accept="image/*"
-              onChange={handleAvatarChange}
-              className="mt-1"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                setAvatarFile(file);
+
+                // Create preview URL
+                const previewUrl = URL.createObjectURL(file);
+                setAvatarPreview(previewUrl);
+
+                // Reset input value to allow re-upload of same file
+                e.target.value = "";
+              }}
+              className="mt-1 cursor-pointer bg-amber-50 ml-2 px-2"
             />
 
             {avatarPreview && (
               <img
                 src={avatarPreview}
-                alt="avatar"
+                alt="avatar preview"
                 className="w-20 h-20 mt-2 rounded-xl object-cover border"
               />
             )}
